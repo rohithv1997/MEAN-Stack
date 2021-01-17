@@ -1,5 +1,5 @@
-export interface IPostDto {
+import { IPost } from './IPost';
+
+export interface IPostDto extends IPost {
   id: string;
-  title: string;
-  content: string;
 }
