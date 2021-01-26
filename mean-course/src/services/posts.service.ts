@@ -52,14 +52,20 @@ export class PostsService {
       });
   }
 
-  public addPosts(title: string, content: string): void {
+  public addPosts(title: string, content: string, image: File): void {
     const post: IPostDto = {
       id: '',
       title: title,
       content: content,
     };
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('content', content);
+    formData.append('image', image, title);
+
     this.httpClient
-      .post<IPostResponse>(PostsService.url, post)
+      .post<IPostResponse>(PostsService.url, formData)
       .subscribe((response) => {
         console.log(response.message);
         const id = response.postId;
