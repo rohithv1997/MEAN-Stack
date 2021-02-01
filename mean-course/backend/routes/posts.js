@@ -27,10 +27,20 @@ const storage = multer.diskStorage({
 });
 
 router.get("", (request, response, next) => {
+  let result = [];
   Post.find().then((documents) => {
+    documents.forEach(function (doc, index) {
+      result.push({
+        id: doc._id,
+        title: doc.title,
+        content: doc.content,
+        imagePath: doc.imagePath,
+      });
+    });
+
     response.status(200).json({
       message: "Posts fetched successfully",
-      posts: documents,
+      posts: result,
     });
   });
 });
@@ -38,7 +48,14 @@ router.get("", (request, response, next) => {
 router.get("/:id", (request, response, next) => {
   Post.findById(request.params.id).then((post) => {
     if (post) {
-      response.status(200).json(post);
+      response.status(200).json({
+        posts: [{
+          id: post._id,
+          title: post.title,
+          content: post.content,
+          imagePath: post.imagePath,
+        }],
+      });
     } else {
       response.status(404).json({
         message: "Post not found",
@@ -51,16 +68,24 @@ router.post(
   "",
   multer({ storage: storage }).single("image"),
   (request, response, next) => {
+    const url = request.protocol + "://" + request.get("host");
+
     const post = new Post({
       title: request.body.title,
       content: request.body.content,
+      imagePath: url + "/images/" + request.file.filename,
     });
 
     post.save().then((createdPost) => {
       console.log(createdPost);
       response.status(201).json({
         message: "Post added successfully",
-        postId: createdPost.id,
+        posts: [{
+          id: createdPost._id,
+          title: createdPost.title,
+          content: createdPost.content,
+          imagePath: createdPost.imagePath,
+        }]
       });
     });
   }
