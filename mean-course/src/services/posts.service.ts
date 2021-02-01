@@ -79,28 +79,38 @@ export class PostsService {
   }
 
   public getPost(postId: string): Observable<IResponse> {
-    return this.httpClient.get<IResponse>(
-      PostsService.url + '/' + postId
-    );
+    return this.httpClient.get<IResponse>(PostsService.url + '/' + postId);
   }
 
-  public updatePost(id: string, title: string, content: string): void {
-    const post: IPostDto = {
-      id: id,
-      title: title,
-      content: content,
-      imagePath: ''
-    };
-    this.httpClient
-      .put<IDefaultResponse>(PostsService.url + '/' + id, post)
-      .subscribe((response) => {
-        console.log(response.message);
-        const updatedPosts = [...this._posts];
-        const oldPostIndex = updatedPosts.findIndex((post) => post.id === id);
-        updatedPosts[oldPostIndex] = post;
-        this._posts = updatedPosts;
-        this.updateSubject();
-        this.router.navigate(['/']);
-      });
+  public updatePost(post: IPostDto, image: File): void {
+    let request: Observable<IDefaultResponse>;
+    if (image !== undefined || image !== null) {
+      const formData = new FormData();
+      formData.append('id', post.id);
+      formData.append('title', post.title);
+      formData.append('content', post.content);
+      formData.append('image', image, post.title);
+      request = this.httpClient.put<IDefaultResponse>(
+        PostsService.url + '/' + post.id,
+        formData
+      );
+    } else {
+      request = this.httpClient.put<IDefaultResponse>(
+        PostsService.url + '/' + post.id,
+        post
+      );
+    }
+
+    request.subscribe((response) => {
+      console.log(response.message);
+      const updatedPosts = [...this._posts];
+      const oldPostIndex = updatedPosts.findIndex(
+        (postIterated) => postIterated.id === post.id
+      );
+      updatedPosts[oldPostIndex] = post;
+      this._posts = updatedPosts;
+      this.updateSubject();
+      this.router.navigate(['/']);
+    });
   }
 }

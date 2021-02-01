@@ -102,9 +102,13 @@ export class PostCreateComponent implements OnInit {
       );
     } else {
       this.postsService.updatePost(
-        this.postId as string,
-        this.form.value.title as string,
-        this.form.value.content as string
+        {
+          id: this.postId as string,
+          title: this.form.value.title as string,
+          content: this.form.value.content as string,
+          imagePath: this.form.value.image as string,
+        } as IPostDto,
+        this.form.value.image as File
       );
     }
     this.form.reset();

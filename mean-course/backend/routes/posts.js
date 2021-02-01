@@ -49,12 +49,14 @@ router.get("/:id", (request, response, next) => {
   Post.findById(request.params.id).then((post) => {
     if (post) {
       response.status(200).json({
-        posts: [{
-          id: post._id,
-          title: post.title,
-          content: post.content,
-          imagePath: post.imagePath,
-        }],
+        posts: [
+          {
+            id: post._id,
+            title: post.title,
+            content: post.content,
+            imagePath: post.imagePath,
+          },
+        ],
       });
     } else {
       response.status(404).json({
@@ -69,7 +71,6 @@ router.post(
   multer({ storage: storage }).single("image"),
   (request, response, next) => {
     const url = request.protocol + "://" + request.get("host");
-
     const post = new Post({
       title: request.body.title,
       content: request.body.content,
@@ -80,12 +81,14 @@ router.post(
       console.log(createdPost);
       response.status(201).json({
         message: "Post added successfully",
-        posts: [{
-          id: createdPost._id,
-          title: createdPost.title,
-          content: createdPost.content,
-          imagePath: createdPost.imagePath,
-        }]
+        posts: [
+          {
+            id: createdPost._id,
+            title: createdPost.title,
+            content: createdPost.content,
+            imagePath: createdPost.imagePath,
+          },
+        ],
       });
     });
   }
@@ -100,19 +103,26 @@ router.delete("/:id", (request, response, next) => {
   });
 });
 
-router.put("/:id", (request, response, next) => {
-  const post = new Post({
-    _id: request.body.id,
-    title: request.body.title,
-    content: request.body.content,
-  });
-
-  Post.updateOne({ _id: request.params.id }, post).then((result) => {
-    console.log(result);
-    response.status(200).json({
-      message: "Post updated successfully",
+router.put(
+  "/:id",
+  multer({ storage: storage }).single("image"),
+  (request, response, next) => {
+    console.log(request.file);
+    const url = request.protocol + "://" + request.get("host");
+    const post = new Post({
+      _id: request.body.id,
+      title: request.body.title,
+      content: request.body.content,
+      imagePath: url + "/images/" + request.file.filename,
     });
-  });
-});
+    console.log(post);
+    Post.updateOne({ _id: request.params.id }, post).then((result) => {
+      console.log(result);
+      response.status(200).json({
+        message: "Post updated successfully",
+      });
+    });
+  }
+);
 
 module.exports = router;
