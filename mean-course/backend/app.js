@@ -1,13 +1,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const postsRoutes = require("./routes/posts");
+const userRoutes = require("./routes/user");
 const path = require("path");
 
 const app = express();
 
 mongoose
   .connect(
-    "mongodb+srv://Rohith:TTUdTyqUnQ1cMAf5@cluster0.enhiv.mongodb.net/meanstack?retryWrites=true&w=majority",
+    "mongodb+srv://Rohith:fRRwRmCPQ5xzHzxK@cluster0.enhiv.mongodb.net/meanstack?retryWrites=true&w=majority",
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => {
@@ -35,5 +36,6 @@ app.use((request, response, next) => {
 });
 
 app.use("/api/posts", postsRoutes);
+app.use("/api/user", userRoutes);
 
 module.exports = app;

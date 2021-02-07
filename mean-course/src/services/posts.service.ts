@@ -3,7 +3,7 @@ import { IPostDto } from 'src/dto/IPost.dto';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { IResponse } from 'src/dto/IResponse';
+import { IPostResponse } from 'src/dto/IPostResponse';
 import { IDefaultResponse } from 'src/dto/IDefaultResponse';
 import { Router } from '@angular/router';
 import { IPostInfo } from 'src/dto/IPostInfo';
@@ -58,7 +58,7 @@ export class PostsService {
     formData.append('image', image, title);
 
     this.httpClient
-      .post<IResponse>(PostsService.url, formData)
+      .post<IPostResponse>(PostsService.url, formData)
       .subscribe((response) => {
         this.router.navigate(['/']);
       });
@@ -72,8 +72,8 @@ export class PostsService {
       });
   }
 
-  public getPost(postId: string): Observable<IResponse> {
-    return this.httpClient.get<IResponse>(`${PostsService.url}/${postId}`);
+  public getPost(postId: string): Observable<IPostResponse> {
+    return this.httpClient.get<IPostResponse>(`${PostsService.url}/${postId}`);
   }
 
   public updatePost(post: IPostDto, image: File): void {

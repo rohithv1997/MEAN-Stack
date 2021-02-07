@@ -1,6 +1,6 @@
 import { IDefaultResponse } from './IDefaultResponse';
 import { IPostDto } from './IPost.dto';
 
-export interface IResponse extends IDefaultResponse {
+export interface IPostResponse extends IDefaultResponse {
   posts: IPostDto[];
 }
