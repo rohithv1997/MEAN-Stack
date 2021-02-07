@@ -27,22 +27,35 @@ const storage = multer.diskStorage({
 });
 
 router.get("", (request, response, next) => {
-  let result = [];
-  Post.find().then((documents) => {
-    documents.forEach(function (doc, index) {
-      result.push({
-        id: doc._id,
-        title: doc.title,
-        content: doc.content,
-        imagePath: doc.imagePath,
+  const pageSize = +request.query.pageSize;
+  const currentPage = +request.query.currentPage;
+  const postQuery = Post.find();
+  if (pageSize && currentPage) {
+    postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
+  }
+  const result = [];
+  let fetchedDocuments;
+  postQuery
+    .then((documents) => {
+      fetchedDocuments = documents;
+      return Post.countDocuments();
+    })
+    .then((count) => {
+      fetchedDocuments.forEach(function (doc, index) {
+        result.push({
+          id: doc._id,
+          title: doc.title,
+          content: doc.content,
+          imagePath: doc.imagePath,
+        });
+      });
+
+      response.status(200).json({
+        message: "Posts fetched successfully",
+        posts: result,
+        postCount: count,
       });
     });
-
-    response.status(200).json({
-      message: "Posts fetched successfully",
-      posts: result,
-    });
-  });
 });
 
 router.get("/:id", (request, response, next) => {
