@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { IPostDto } from 'src/dto/IPost.dto';
-import { PostsService } from 'src/services/posts.service';
+import { PostsService } from 'src/app/post/services/posts.service';
 import { mimeTypeValidator } from '../validators/mime-type.validator';
 
 @Component({

@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.css']
+  styleUrls: ['./signup.component.css'],
 })
 export class SignupComponent implements OnInit {
-
   public isLoading = false;
   public form!: FormGroup;
 
-  constructor() { }
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
     this.form = new FormGroup({
@@ -20,7 +20,7 @@ export class SignupComponent implements OnInit {
       }),
       password: new FormControl(null, {
         validators: [Validators.required],
-      })
+      }),
     });
   }
   get formEmail(): FormArray {
@@ -42,6 +42,10 @@ export class SignupComponent implements OnInit {
     this.isLoading = true;
 
     console.log(this.form.value);
+    this.authService.createUser(
+      this.form.value.email as string,
+      this.form.value.password as string
+    );
 
     this.form.reset();
   }
