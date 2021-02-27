@@ -2,7 +2,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 
 const User = require("../models/user");
-const { request } = require("node:http");
+const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
@@ -37,13 +37,26 @@ router.post("/login", (request, response, next) => {
         message: "Email not found",
       });
     }
+
     return bcrypt
       .compare(request.body.password, user.password)
       .then((result) => {
         if (!result) {
           return response.status(401).json({
-            message: "Email not found",
+            message: "Password mismatch",
           });
+        }
+
+        const token = jwt.sign(
+          {
+            email: user.email,
+            userId: user._id,
+          },
+          "secret_this_should_be_longer",
+          {
+            expiresIn: "1h",
+          }
+        );
       })
       .catch((exception) => {
         return response.status(401).json({
