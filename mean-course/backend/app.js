@@ -26,7 +26,7 @@ app.use((request, response, next) => {
   response.setHeader("Access-Control-Allow-Origin", "*");
   response.setHeader(
     "Access-Control-Allow-Headers",
-    "Origin,X-Requested,Content-Type,Accept"
+    "Origin,X-Requested,Content-Type,Accept,authorization"
   );
   response.setHeader(
     "Access-Control-Allow-Methods",
