@@ -19,7 +19,7 @@ import { HeaderComponent } from './header/header.component';
 import { PostListComponent } from './post/post-list/post-list.component';
 import { SignupComponent } from './authentication/signup/signup.component';
 import { LoginComponent } from './authentication/login/login.component';
-import { AuthInterceptorService } from './authentication/interceptor/auth-interceptor.service';
+import { AuthInterceptorService } from './authentication/services/auth-interceptor.service';
 
 @NgModule({
   declarations: [

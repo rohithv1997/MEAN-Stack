@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { IPostDto } from 'src/dto/IPost.dto';
 import { IPostInfo } from 'src/dto/IPostInfo';
 import { PostsService } from 'src/app/post/services/posts.service';
+import { AuthService } from 'src/app/authentication/services/auth.service';
 
 @Component({
   selector: 'app-post-list',
@@ -11,15 +12,20 @@ import { PostsService } from 'src/app/post/services/posts.service';
   styleUrls: ['./post-list.component.css'],
 })
 export class PostListComponent implements OnInit, OnDestroy {
-  constructor(private postsService: PostsService) {}
+  constructor(
+    private postsService: PostsService,
+    private authService: AuthService
+  ) {}
 
   public posts: IPostDto[] = [];
-  private subscription!: Subscription;
+  private postSubscription: Subscription = new Subscription();
+  private authSubscription: Subscription = new Subscription();
   public isLoading = false;
   public totalPosts = 0;
   public pageSize = 1;
   public pageSizeOptions = [1, 2, 5];
   public currentPage = 1;
+  public isUserAuthenticated = false;
 
   private getPosts(): void {
     this.isLoading = true;
@@ -28,17 +34,24 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getPosts();
-    this.subscription = this.postsService.getPostsUpdatedSubscription(
+    this.postSubscription = this.postsService.getPostsUpdatedSubscription(
       (postInfo: IPostInfo) => {
         this.posts = postInfo.posts;
         this.totalPosts = postInfo.postCount;
         this.isLoading = false;
       }
     );
+    this.isUserAuthenticated = this.authService.IsAuthenticated;
+    this.authSubscription = this.authService.getAuthStatusListener(
+      (isAuthenticated) => {
+        this.isUserAuthenticated = isAuthenticated;
+      }
+    );
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.postSubscription.unsubscribe();
+    this.authSubscription.unsubscribe();
   }
 
   public onEdit(): void {}

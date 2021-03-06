@@ -4,12 +4,7 @@
     <form [formGroup]="form" (submit)="onSubmit()" *ngIf="!isLoading">
       <mat-form-field>
         <mat-label>Email</mat-label>
-        <input
-          matInput
-          type="email"
-          name="email"
-          formControlName="email"
-        />
+        <input matInput type="email" name="email" formControlName="email" />
         <mat-error *ngIf="formEmail.invalid"
           >Please enter valid email</mat-error
         >
@@ -26,7 +21,14 @@
           >Please enter Password</mat-error
         >
       </mat-form-field>
-      <button mat-raised-button color="primary" type="submit">Login</button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        *ngIf="!isLoading"
+      >
+        Login
+      </button>
     </form>
   </mat-card-content>
 </mat-card>
