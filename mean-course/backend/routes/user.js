@@ -56,13 +56,14 @@ router.post("/login", (request, response, next) => {
           },
           "secret_this_should_be_longer",
           {
-            expiresIn: "60s",
+            expiresIn: "900s",
           }
         );
 
         return response.status(200).json({
           token: token,
-          expiresIn : 60
+          expiresIn: 900,
+          userId: fetchedUser._id,
         });
       })
       .catch((exception) => {

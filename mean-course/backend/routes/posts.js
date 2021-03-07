@@ -3,6 +3,7 @@ const Post = require("../models/post");
 const multer = require("multer");
 const checkAuth = require("../middleware/check-auth");
 const router = express.Router();
+const ObjectID = require("mongodb").ObjectID;
 
 const MIME_TYPE_MAP = {
   "image/png": "png",
@@ -47,6 +48,7 @@ router.get("", (request, response, next) => {
           title: doc.title,
           content: doc.content,
           imagePath: doc.imagePath,
+          userId: doc.userId,
         });
       });
 
@@ -68,6 +70,7 @@ router.get("/:id", (request, response, next) => {
             title: post.title,
             content: post.content,
             imagePath: post.imagePath,
+            userId: post.userId,
           },
         ],
       });
@@ -89,6 +92,7 @@ router.post(
       title: request.body.title,
       content: request.body.content,
       imagePath: url + "/images/" + request.file.filename,
+      userId: request.userData.userId,
     });
 
     post.save().then((createdPost) => {
@@ -101,6 +105,7 @@ router.post(
             title: createdPost.title,
             content: createdPost.content,
             imagePath: createdPost.imagePath,
+            userId: createdPost.userId,
           },
         ],
       });
@@ -109,11 +114,19 @@ router.post(
 );
 
 router.delete("/:id", checkAuth, (request, response, next) => {
-  Post.deleteOne({ _id: request.params.id }).then((result) => {
-    console.log(result);
-    response.status(200).json({
-      message: "Post deleted successfully",
-    });
+  Post.deleteOne({
+    _id: ObjectID(request.params.id),
+    userId: ObjectID(request.userData.userId),
+  }).then((result) => {
+    if (result.n > 0) {
+      response.status(200).json({
+        message: "Post updated successfully",
+      });
+    } else {
+      response.status(401).json({
+        message: "Not Authorised to delete post!",
+      });
+    }
   });
 });
 
@@ -122,20 +135,30 @@ router.put(
   checkAuth,
   multer({ storage: storage }).single("image"),
   (request, response, next) => {
-    console.log(request.file);
     const url = request.protocol + "://" + request.get("host");
     const post = new Post({
       _id: request.body.id,
       title: request.body.title,
       content: request.body.content,
       imagePath: url + "/images/" + request.file.filename,
+      userId: request.userData.userId,
     });
-    console.log(post);
-    Post.updateOne({ _id: request.params.id }, post).then((result) => {
-      console.log(result);
-      response.status(200).json({
-        message: "Post updated successfully",
-      });
+    Post.updateOne(
+      {
+        _id: ObjectID(request.params.id),
+        userId: ObjectID(request.userData.userId),
+      },
+      post
+    ).then((result) => {
+      if (result.nModified > 0) {
+        response.status(200).json({
+          message: "Post updated successfully",
+        });
+      } else {
+        response.status(401).json({
+          message: "Not Authorised to edit post!",
+        });
+      }
     });
   }
 );

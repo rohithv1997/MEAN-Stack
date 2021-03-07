@@ -3,4 +3,5 @@ export interface IPostDto {
   title: string;
   content: string;
   imagePath: string;
+  userId: string;
 }

@@ -36,6 +36,7 @@ export class PostsService {
     this.httpClient
       .get<IPostInfo>(`${PostsService.url}${queryParams}`)
       .subscribe((transformedPostsData) => {
+        console.log(transformedPostsData);
         this._posts = transformedPostsData.posts;
         this._postsUpdated.next({
           posts: [...this._posts],
@@ -50,6 +51,7 @@ export class PostsService {
       title: title,
       content: content,
       imagePath: '',
+      userId: '1',
     };
 
     const formData = new FormData();
@@ -76,7 +78,7 @@ export class PostsService {
     return this.httpClient.get<IPostResponse>(`${PostsService.url}/${postId}`);
   }
 
-  public updatePost(post: IPostDto, image: File): void {
+  public updatePost(post: IPostDto, image: File | string): void {
     let request: Observable<IDefaultResponse>;
     if (image !== undefined || image !== null) {
       const formData = new FormData();
@@ -89,6 +91,8 @@ export class PostsService {
         formData
       );
     } else {
+      post.userId = '';
+
       request = this.httpClient.put<IDefaultResponse>(
         `${PostsService.url}/${post.id}`,
         post

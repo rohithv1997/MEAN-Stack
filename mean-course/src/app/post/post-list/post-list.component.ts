@@ -26,6 +26,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   public pageSizeOptions = [1, 2, 5];
   public currentPage = 1;
   public isUserAuthenticated = false;
+  public userId!: string;
 
   private getPosts(): void {
     this.isLoading = true;
@@ -42,9 +43,11 @@ export class PostListComponent implements OnInit, OnDestroy {
       }
     );
     this.isUserAuthenticated = this.authService.IsAuthenticated;
+    this.userId = this.authService.UserId;
     this.authSubscription = this.authService.getAuthStatusListener(
       (isAuthenticated) => {
         this.isUserAuthenticated = isAuthenticated;
+        this.userId = this.authService.UserId;
       }
     );
   }
