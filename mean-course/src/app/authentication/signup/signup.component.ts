@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -10,6 +11,7 @@ import { AuthService } from '../services/auth.service';
 export class SignupComponent implements OnInit {
   public isLoading = false;
   public form!: FormGroup;
+  private authSubscription = new Subscription();
 
   constructor(private authService: AuthService) {}
 
@@ -22,7 +24,14 @@ export class SignupComponent implements OnInit {
         validators: [Validators.required],
       }),
     });
+
+    this.authSubscription = this.authService.getAuthStatusSubscription(
+      (isLoading) => {
+        this.isLoading = isLoading;
+      }
+    );
   }
+
   get formEmail(): FormArray {
     return this.formControls('email');
   }
@@ -47,5 +56,9 @@ export class SignupComponent implements OnInit {
     );
 
     this.form.reset();
+  }
+
+  ngOnDestroy() {
+    this.authSubscription.unsubscribe();
   }
 }

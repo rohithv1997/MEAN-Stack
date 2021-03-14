@@ -26,12 +26,16 @@ export class AuthService {
       password: password,
     };
 
-    this.httpClient
-      .post(`${AuthService.url}/signup`, authData)
-      .subscribe((response) => {
+    this.httpClient.post(`${AuthService.url}/signup`, authData).subscribe(
+      (response) => {
         console.log(response);
         this.router.navigate(['/']);
-      });
+      },
+      (error) => {
+        console.log(error);
+        this.authStatusListener.next(false);
+      }
+    );
   }
 
   loginUser(email: string, password: string) {
@@ -42,14 +46,20 @@ export class AuthService {
 
     this.httpClient
       .post<IUserResponse>(`${AuthService.url}/login`, authData)
-      .subscribe((response) => {
-        this.token = response.token;
-        if (response.token) {
-          const expiresIn = response.expiresIn;
-          this.loginImpl(expiresIn, response.userId);
-          this.saveAuthData(response);
+      .subscribe(
+        (response) => {
+          this.token = response.token;
+          if (response.token) {
+            const expiresIn = response.expiresIn;
+            this.loginImpl(expiresIn, response.userId);
+            this.saveAuthData(response);
+          }
+        },
+        (error) => {
+          console.log(error);
+          this.authStatusListener.next(false);
         }
-      });
+      );
   }
 
   private loginImpl(expiresIn: number, userId: string) {
@@ -77,9 +87,9 @@ export class AuthService {
     return this.token;
   }
 
-  getAuthStatusListener(callback: (args: boolean) => void): Subscription {
-    return this.authStatusListener.subscribe((isAuthenticated) => {
-      callback(isAuthenticated);
+  getAuthStatusSubscription(callback: (args: boolean) => void): Subscription {
+    return this.authStatusListener.subscribe((success) => {
+      callback(success);
     });
   }
 
