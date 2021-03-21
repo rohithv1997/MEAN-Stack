@@ -89,21 +89,28 @@ export class PostsService {
   ): Subscription {
     return this.httpClient
       .get<IPostResponse>(`${PostsService.url}/${postId}`)
-      .subscribe((postData) => {
-        successCallback(postData);
-      }, error => {
-        errorCallback();
-      });
+      .subscribe(
+        (postData) => {
+          successCallback(postData);
+        },
+        (error) => {
+          errorCallback();
+        }
+      );
   }
 
-  public updatePost(post: IPostDto, image: File | string): void {
+  public updatePost(post: IPostDto, image: File, blob: Blob): void {
     let request: Observable<IDefaultResponse>;
     if (image !== undefined || image !== null) {
       const formData = new FormData();
       formData.append('id', post.id);
       formData.append('title', post.title);
       formData.append('content', post.content);
-      formData.append('image', image, post.title);
+      if (blob.size > 0) {
+        formData.append('image', blob, post.title);
+      } else {
+        formData.append('image', post.imagePath);
+      }
       request = this.httpClient.put<IDefaultResponse>(
         `${PostsService.url}/${post.id}`,
         formData

@@ -27,6 +27,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
   public imagePreview = '';
   private authStatusSubscription = new Subscription();
   private getPostSubscription = new Subscription();
+  private blob = new Blob();
 
   ngOnInit(): void {
     this.form = new FormGroup({
@@ -119,10 +120,10 @@ export class PostCreateComponent implements OnInit, OnDestroy {
         {
           id: this.postId as string,
           title: this.form.value.title as string,
-          content: this.form.value.content as string,
-          imagePath: this.form.value.image as string,
+          content: this.form.value.content as string
         } as IPostDto,
-        this.form.value.image as File
+        this.form.value.image as File,
+        this.blob
       );
     }
     this.form.reset();
@@ -135,8 +136,9 @@ export class PostCreateComponent implements OnInit, OnDestroy {
     });
     this.form.get('image')?.updateValueAndValidity();
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = (e) => {
       this.imagePreview = reader.result as string;
+      this.blob = new Blob([new Uint8Array(e.target?.result as ArrayBuffer)], {type: file.type });
     };
     reader.readAsDataURL(file);
   }
