@@ -120,7 +120,8 @@ export class PostCreateComponent implements OnInit, OnDestroy {
         {
           id: this.postId as string,
           title: this.form.value.title as string,
-          content: this.form.value.content as string
+          content: this.form.value.content as string,
+          imagePath: this.form.value.image as string,
         } as IPostDto,
         this.form.value.image as File,
         this.blob
@@ -138,7 +139,9 @@ export class PostCreateComponent implements OnInit, OnDestroy {
     const reader = new FileReader();
     reader.onload = (e) => {
       this.imagePreview = reader.result as string;
-      this.blob = new Blob([new Uint8Array(e.target?.result as ArrayBuffer)], {type: file.type });
+      this.blob = new Blob([new Uint8Array(e.target?.result as ArrayBuffer)], {
+        type: file.type,
+      });
     };
     reader.readAsDataURL(file);
   }

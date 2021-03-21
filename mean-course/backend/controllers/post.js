@@ -128,12 +128,17 @@ exports.getSinglePost = (request, response, next) => {
 };
 
 exports.updatePost = (request, response, next) => {
-  const url = request.protocol + "://" + request.get("host");
+  let imagePath = request.body.imagePath;
+  if (request.file) {
+    const url = request.protocol + "://" + request.get("host");
+    imagePath = url + "/images/" + request.file.filename;
+  }
+
   const post = new Post({
     _id: request.body.id,
     title: request.body.title,
     content: request.body.content,
-    imagePath: url + "/images/" + request.file.filename,
+    imagePath: imagePath,
     userId: request.userData.userId,
   });
   Post.updateOne(
