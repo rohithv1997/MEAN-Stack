@@ -53,9 +53,9 @@ exports.login = (request, response, next) => {
             email: fetchedUser.email,
             userId: fetchedUser._id,
           },
-          "secret_this_should_be_longer",
+          process.env.JWT_KEY,
           {
-            expiresIn: "900s",
+            expiresIn: process.env.JWT_TIMEOUT,
           }
         );
 

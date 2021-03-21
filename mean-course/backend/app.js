@@ -3,18 +3,35 @@ const mongoose = require("mongoose");
 const postsRoutes = require("./routes/posts");
 const userRoutes = require("./routes/user");
 const path = require("path");
+const { CONSOLE_APPENDER } = require("karma/lib/constants");
 
 const app = express();
 
+const connectionString =
+  process.env.MONGO_ATLAS_SERVER_NAME +
+  "//" +
+  process.env.MONGO_ATLAS_LOGIN +
+  ":" +
+  process.env.MONGO_ATLAS_PASSWORD +
+  "@" +
+  process.env.MONGO_ATLAS_CLUSTER +
+  "/" +
+  process.env.MONGO_ATLAS_PROJECT +
+  "?" +
+  process.env.MONGO_ATLAS_ARGS;
+
+console.log(connectionString);
+
 mongoose
-  .connect(
-    "mongodb+srv://Rohith:fRRwRmCPQ5xzHzxK@cluster0.enhiv.mongodb.net/meanstack?retryWrites=true&w=majority",
-    { useNewUrlParser: true, useUnifiedTopology: true }
-  )
+  .connect(connectionString, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     console.log("Connected to MongoDb Cloud");
   })
-  .catch(() => {
+  .catch((error) => {
+    console.log(error);
     console.log("Connection failed");
   });
 

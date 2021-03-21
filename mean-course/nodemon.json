@@ -1,0 +1,12 @@
+{
+  "env": {
+    "MONGO_ATLAS_SERVER_NAME": "mongodb+srv:",
+    "MONGO_ATLAS_LOGIN": "Rohith",
+    "MONGO_ATLAS_PASSWORD": "fRRwRmCPQ5xzHzxK",
+    "MONGO_ATLAS_CLUSTER": "cluster0.enhiv.mongodb.net",
+    "MONGO_ATLAS_PROJECT": "meanstack",
+    "MONGO_ATLAS_ARGS": "retryWrites=true&w=majority",
+    "JWT_KEY": "secret_this_should_be_longer",
+    "JWT_TIMEOUT": "900s"
+  }
+}
