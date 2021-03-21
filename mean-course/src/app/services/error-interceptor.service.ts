@@ -9,6 +9,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { IErrorDto } from 'src/dto/IError.dto';
 import { ErrorComponent } from '../error/error.component';
 
 @Injectable({
@@ -22,7 +23,10 @@ export class ErrorInterceptorService implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
-        this.matDialogService.open(ErrorComponent);
+        this.matDialogService.open(ErrorComponent, {
+          data: { errorResponse: error } as IErrorDto,
+        });
+        // console.log(error);
         return throwError(error);
       })
     );

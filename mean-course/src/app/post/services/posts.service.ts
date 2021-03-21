@@ -24,10 +24,10 @@ export class PostsService {
   }
 
   public getPostsUpdatedSubscription(
-    callback: (args: IPostInfo) => void
+    successCallback: (args: IPostInfo) => void
   ): Subscription {
     return this._postsUpdated.subscribe((postInfo) => {
-      callback(postInfo);
+      successCallback(postInfo);
     });
   }
 
@@ -66,16 +66,35 @@ export class PostsService {
       });
   }
 
-  public deletePosts(postId: string, callBack: () => void): void {
+  public deletePosts(
+    postId: string,
+    successCallback: () => void,
+    errorCallback: () => void
+  ): void {
     this.httpClient
       .delete<IDefaultResponse>(`${PostsService.url}/${postId}`)
-      .subscribe((response) => {
-        callBack();
-      });
+      .subscribe(
+        (response) => {
+          successCallback();
+        },
+        (error) => {
+          errorCallback();
+        }
+      );
   }
 
-  public getPost(postId: string): Observable<IPostResponse> {
-    return this.httpClient.get<IPostResponse>(`${PostsService.url}/${postId}`);
+  public getPost(
+    postId: string,
+    successCallback: (args: IPostResponse) => void,
+    errorCallback: () => void
+  ): Subscription {
+    return this.httpClient
+      .get<IPostResponse>(`${PostsService.url}/${postId}`)
+      .subscribe((postData) => {
+        successCallback(postData);
+      }, error => {
+        errorCallback();
+      });
   }
 
   public updatePost(post: IPostDto, image: File | string): void {

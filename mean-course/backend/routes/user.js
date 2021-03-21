@@ -22,7 +22,8 @@ router.post("/signup", (request, response, next) => {
       })
       .catch((error) => {
         response.status(500).json({
-          error: error,
+          // error: error,
+          message: "Invalid Authentication Credentials",
         });
       });
   });

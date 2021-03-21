@@ -57,29 +57,40 @@ router.get("", (request, response, next) => {
         posts: result,
         postCount: count,
       });
+    })
+    .catch((error) => {
+      return response.status(500).json({
+        message: "Fetch Posts failed",
+      });
     });
 });
 
 router.get("/:id", (request, response, next) => {
-  Post.findById(request.params.id).then((post) => {
-    if (post) {
-      response.status(200).json({
-        posts: [
-          {
-            id: post._id,
-            title: post.title,
-            content: post.content,
-            imagePath: post.imagePath,
-            userId: post.userId,
-          },
-        ],
+  Post.findById(request.params.id)
+    .then((post) => {
+      if (post) {
+        response.status(200).json({
+          posts: [
+            {
+              id: post._id,
+              title: post.title,
+              content: post.content,
+              imagePath: post.imagePath,
+              userId: post.userId,
+            },
+          ],
+        });
+      } else {
+        response.status(404).json({
+          message: "Post not found",
+        });
+      }
+    })
+    .catch((error) => {
+      return response.status(500).json({
+        message: "Fetch Post failed",
       });
-    } else {
-      response.status(404).json({
-        message: "Post not found",
-      });
-    }
-  });
+    });
 });
 
 router.post(
@@ -95,21 +106,28 @@ router.post(
       userId: request.userData.userId,
     });
 
-    post.save().then((createdPost) => {
-      console.log(createdPost);
-      response.status(201).json({
-        message: "Post added successfully",
-        posts: [
-          {
-            id: createdPost._id,
-            title: createdPost.title,
-            content: createdPost.content,
-            imagePath: createdPost.imagePath,
-            userId: createdPost.userId,
-          },
-        ],
+    post
+      .save()
+      .then((createdPost) => {
+        console.log(createdPost);
+        response.status(201).json({
+          message: "Post added successfully",
+          posts: [
+            {
+              id: createdPost._id,
+              title: createdPost.title,
+              content: createdPost.content,
+              imagePath: createdPost.imagePath,
+              userId: createdPost.userId,
+            },
+          ],
+        });
+      })
+      .catch((error) => {
+        response.status(500).json({
+          message: "Create Post failed!",
+        });
       });
-    });
   }
 );
 
@@ -117,17 +135,23 @@ router.delete("/:id", checkAuth, (request, response, next) => {
   Post.deleteOne({
     _id: ObjectID(request.params.id),
     userId: ObjectID(request.userData.userId),
-  }).then((result) => {
-    if (result.n > 0) {
-      response.status(200).json({
-        message: "Post updated successfully",
+  })
+    .then((result) => {
+      if (result.n > 0) {
+        response.status(200).json({
+          message: "Post updated successfully",
+        });
+      } else {
+        response.status(401).json({
+          message: "Not Authorised to delete post!",
+        });
+      }
+    })
+    .catch((error) => {
+      return response.status(500).json({
+        message: "Delete Posts failed",
       });
-    } else {
-      response.status(401).json({
-        message: "Not Authorised to delete post!",
-      });
-    }
-  });
+    });
 });
 
 router.put(
@@ -149,17 +173,23 @@ router.put(
         userId: ObjectID(request.userData.userId),
       },
       post
-    ).then((result) => {
-      if (result.nModified > 0) {
-        response.status(200).json({
-          message: "Post updated successfully",
+    )
+      .then((result) => {
+        if (result.nModified > 0) {
+          response.status(200).json({
+            message: "Post updated successfully",
+          });
+        } else {
+          response.status(401).json({
+            message: "Not Authorised to edit post!",
+          });
+        }
+      })
+      .catch((error) => {
+        return response.status(500).json({
+          message: "Update Post failed!",
         });
-      } else {
-        response.status(401).json({
-          message: "Not Authorised to edit post!",
-        });
-      }
-    });
+      });
   }
 );
 

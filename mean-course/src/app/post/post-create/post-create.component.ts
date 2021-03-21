@@ -1,19 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { IPostDto } from 'src/dto/IPost.dto';
 import { PostsService } from 'src/app/post/services/posts.service';
 import { mimeTypeValidator } from '../validators/mime-type.validator';
+import { Subscription } from 'rxjs';
+import { AuthService } from 'src/app/authentication/services/auth.service';
 
 @Component({
   selector: 'app-post-create',
   templateUrl: './post-create.component.html',
   styleUrls: ['./post-create.component.css'],
 })
-export class PostCreateComponent implements OnInit {
+export class PostCreateComponent implements OnInit, OnDestroy {
   constructor(
     private postsService: PostsService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private authService: AuthService
   ) {}
 
   private mode = 'create';
@@ -22,6 +25,8 @@ export class PostCreateComponent implements OnInit {
   public isLoading = false;
   public form!: FormGroup;
   public imagePreview = '';
+  private authStatusSubscription = new Subscription();
+  private getPostSubscription = new Subscription();
 
   ngOnInit(): void {
     this.form = new FormGroup({
@@ -42,9 +47,9 @@ export class PostCreateComponent implements OnInit {
         this.mode = 'edit';
         this.postId = paramMap.get('postId');
         this.isLoading = true;
-        this.postsService
-          .getPost(this.postId as string)
-          .subscribe((postData) => {
+        this.getPostSubscription = this.postsService.getPost(
+          this.postId as string,
+          (postData) => {
             this.post = {
               id: postData.posts[0].id,
               title: postData.posts[0].title,
@@ -58,12 +63,20 @@ export class PostCreateComponent implements OnInit {
               content: this.post.content,
               image: this.post.imagePath,
             });
-          });
+          },
+          () => {}
+        );
       } else {
         this.mode = 'create';
         this.postId = null;
       }
     });
+
+    this.authStatusSubscription = this.authService.getAuthStatusSubscription(
+      (authStatus) => {
+        this.isLoading = authStatus;
+      }
+    );
   }
 
   get isValidImagePreview(): boolean {
@@ -126,5 +139,10 @@ export class PostCreateComponent implements OnInit {
       this.imagePreview = reader.result as string;
     };
     reader.readAsDataURL(file);
+  }
+
+  ngOnDestroy(): void {
+    this.getPostSubscription.unsubscribe();
+    this.authStatusSubscription.unsubscribe();
   }
 }
