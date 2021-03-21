@@ -1,39 +1,25 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { AuthGuard } from './authentication/services/auth-guard.service';
-import { LoginComponent } from './authentication/login/login.component';
-import { SignupComponent } from './authentication/signup/signup.component';
-import { PostCreateComponent } from './post/post-create/post-create.component';
-import { PostListComponent } from './post/post-list/post-list.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: PostListComponent,
+    redirectTo: '/post',
+    pathMatch: 'full',
   },
   {
-    path: 'create',
-    component: PostCreateComponent,
-    canActivate: [AuthGuard],
+    path: 'post',
+    loadChildren: () => import('./post/post.module').then((m) => m.PostModule),
   },
   {
-    path: 'edit/:postId',
-    component: PostCreateComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'login',
-    component: LoginComponent,
-  },
-  {
-    path: 'signup',
-    component: SignupComponent,
+    path: 'auth',
+    loadChildren: () =>
+      import('./authentication/auth.module').then((m) => m.AuthModule),
   },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
-  providers: [AuthGuard],
 })
 export class AppRoutingModule {}

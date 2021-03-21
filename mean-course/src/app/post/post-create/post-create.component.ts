@@ -47,7 +47,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
         this.mode = 'edit';
         this.postId = paramMap.get('postId');
         this.isLoading = true;
-        this.getPostSubscription = this.postsService.getPost(
+        this.postsService.getPost(
           this.postId as string,
           (postData) => {
             this.post = {

@@ -28,11 +28,9 @@ export class AuthService {
 
     this.httpClient.post(`${AuthService.url}/signup`, authData).subscribe(
       (response) => {
-        console.log(response);
         this.router.navigate(['/']);
       },
       (error) => {
-        console.log(error);
         this.authStatusListener.next(false);
       }
     );
@@ -56,7 +54,6 @@ export class AuthService {
           }
         },
         (error) => {
-          console.log(error);
           this.authStatusListener.next(false);
         }
       );

@@ -36,7 +36,6 @@ export class PostsService {
     this.httpClient
       .get<IPostInfo>(`${PostsService.url}${queryParams}`)
       .subscribe((transformedPostsData) => {
-        console.log(transformedPostsData);
         this._posts = transformedPostsData.posts;
         this._postsUpdated.next({
           posts: [...this._posts],

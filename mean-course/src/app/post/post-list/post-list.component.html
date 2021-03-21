@@ -8,7 +8,7 @@
     <p>{{ post.content }}</p>
     <mat-action-row *ngIf="isUserAuthenticated && userId === post.userId">
       <a
-        [routerLink]="['/edit', post.id]"
+        [routerLink]="['/post/edit', post.id]"
         mat-raised-button
         color="primary"
         (click)="onEdit()"

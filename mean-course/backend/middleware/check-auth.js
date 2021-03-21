@@ -10,6 +10,7 @@ module.exports = (request, response, next) => {
     };
     next();
   } catch (error) {
+    console.log(error);
     response.status(401).json({
       message: "Authentication failed!",
     });

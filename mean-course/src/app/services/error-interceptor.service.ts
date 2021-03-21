@@ -26,7 +26,6 @@ export class ErrorInterceptorService implements HttpInterceptor {
         this.matDialogService.open(ErrorComponent, {
           data: { errorResponse: error } as IErrorDto,
         });
-        // console.log(error);
         return throwError(error);
       })
     );
