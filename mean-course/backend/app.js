@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const postsRoutes = require("./routes/posts");
 const userRoutes = require("./routes/user");
 const path = require("path");
-const { CONSOLE_APPENDER } = require("karma/lib/constants");
 
 const app = express();
 
